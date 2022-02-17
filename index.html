@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./main.js"></script>
+    <title>Make a Sketch!</title>
+  </head>
+  <body>
+    <div id="content">
+      <div id="ui">
+        <div class="title">Make a Sketch!</div>
+        <hr>
+        <div class="top">
+          <p class="title">Colors</p>
+          <div class="picker-container">
+            <input
+              type="color"
+              id="ink"
+              class="color-picker"
+              name="pencil-color"
+              value="#cb7c89"
+            />
+            <label for="pencil-color">Pencil color</label>
+          </div>
+
+          <div class="picker-container">
+            <input
+              type="color"
+              id="bg-color"
+              class="color-picker"
+              name="background-color"
+              value="#ffffff"
+            />
+            <label for="background-color">Background color</label>
+          </div>
+
+          <div class="checkbox-container">
+          <input type="checkbox" id="eraser"></input>
+          <label for="eraser">Eraser</label>
+          </div>
+
+          <div class="checkbox-container">
+            <input type="checkbox" id="rainbow" />
+            <label for="rainbow">Rainbow</label>
+          </div>
+
+          <div class="checkbox-container">
+            <input type="checkbox" id="shadow" />
+            <label for="shadow">Shadow</label>
+          </div>
+
+          <div class="checkbox-container sub-shadow">
+            <input type="checkbox" id="smooth" />
+            <label for="smooth">smooth</label>
+            <input type="checkbox" id="rough" />
+            <label for="rough">rough</label>
+          </div>
+
+          <hr>
+
+          <div class="picker-container">
+            <input
+              type="checkbox"
+              id="replace-input"
+              class="color-picker"
+              name="replace-input"
+              value="#ffffff"
+            />
+            <label for="replace-input" id="grab-instr">Replace color...</label>
+          </div>
+
+          <div id="color-grabber"></div>
+
+          <div class="picker-container">
+            <input
+              type="color"
+              id="replace-output"
+              class="color-picker"
+              name="replace-output"
+              value="#ffffff"
+            />
+            <label for="replace-output" id="change-instr"></label>
+          </div>
+
+        </div>
+        <div class="bottom">
+          <p class="title">Grid</p>
+          <button class="clearButton">Clear the grid</button>
+
+          <div class="slider-values">
+            <button id="grid16" value="16">16 x 16</button>
+            <button id="grid32" value="32">32 x 32</button>
+            <button id="grid64" value="64">64 x 64</button>
+            <button id="grid100" value="100">100 x 100</button>
+          </div>
+          <div class="slider-output">
+            <input
+              type="range"
+              min="4"
+              max="100"
+              value="16"
+              step="4"
+              class="slider"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="wrapper">
+        <div id="container"></div>
+      </div>
+    </div>
+  </body>
+</html>
