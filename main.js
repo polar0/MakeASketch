@@ -171,6 +171,9 @@ function changeGridSize() {
 
 function startDrawing() {
   if (eraser.checked) {
+    if (this.hasAttribute('value')) {
+      this.removeAttribute('value');
+    }
     this.style.background = bgColor.value;
   } else if (rainbowMode.checked) {
     let randomColor = Math.floor(Math.random() * 16777215)
