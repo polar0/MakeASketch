@@ -27,7 +27,7 @@ const changeInstructions = document.querySelector('#change-instr');
 const style = document.createElement('style');
 
 let boxes = [];
-let mouseDown = 0;
+let mouseDown = false;
 
 // Create the initial grid
 let count = 16;
@@ -158,7 +158,7 @@ function createGrid(count) {
 }
 
 document.addEventListener('mousedown', function (e) {
-  mouseDown = 1;
+  mouseDown = true;
   if (e.target.hasAttribute('class', 'box')) {
     console.log('target');
     // lui dire que this c'est event target
@@ -167,7 +167,7 @@ document.addEventListener('mousedown', function (e) {
 });
 
 document.addEventListener('mouseup', function () {
-  mouseDown = 0;
+  mouseDown = false;
 });
 
 function clearGrid() {
@@ -185,7 +185,7 @@ function changeGridSize() {
 
 function startDrawing(box) {
   let pixel = box.target.style;
-  if (mouseDown === 1) {
+  if (mouseDown) {
     if (eraser.checked) {
       if (this.hasAttribute('value')) {
         this.removeAttribute('value');
