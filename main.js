@@ -27,6 +27,7 @@ const changeInstructions = document.querySelector('#change-instr');
 const style = document.createElement('style');
 
 let boxes = [];
+let mouseDown = 0;
 
 // Create the initial grid
 let count = 16;
@@ -51,7 +52,6 @@ bgColor.oninput = function () {
   for (const box of boxes) {
     if (box.style.background === oldColor) {
       box.style.background = bgColor.value;
-      console.log('yes');
     }
   }
   oldColor = hexToRGB(bgColor.value);
@@ -152,9 +152,23 @@ function createGrid(count) {
   document.head.appendChild(style);
 
   for (const box of boxes) {
-    box.addEventListener('mousedown', startDrawing);
+    box.removeEventListener('mouseover', startDrawing);
+    box.addEventListener('mouseover', startDrawing);
   }
 }
+
+document.addEventListener('mousedown', function (e) {
+  mouseDown = 1;
+  if (e.target.hasAttribute('class', 'box')) {
+    console.log('target');
+    // lui dire que this c'est event target
+    startDrawing(e);
+  }
+});
+
+document.addEventListener('mouseup', function () {
+  mouseDown = 0;
+});
 
 function clearGrid() {
   for (const box of boxes) {
@@ -169,36 +183,29 @@ function changeGridSize() {
   createGrid(count);
 }
 
-function startDrawing() {
-  if (eraser.checked) {
-    if (this.hasAttribute('value')) {
-      this.removeAttribute('value');
-    }
-    this.style.background = bgColor.value;
-  } else if (rainbowMode.checked) {
-    let randomColor = Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, '0');
-    this.style.background = `#${randomColor}`;
-  } else if (shadowMode.checked) {
-    this.style.background = drawShadow(this);
-  } else {
-    this.style.background = inkBase.value;
-    inkBase.disabled = false;
-    shadowMode.checked = false;
-    rainbowMode.checked = false;
-    eraser.checked = false;
-    subShadow.style.display = 'none';
-  }
-
-  // Get the user interaction
-  for (const box of boxes) {
-    box.addEventListener('mouseover', startDrawing);
-    box.addEventListener('mouseup', function () {
-      for (const box of boxes) {
-        box.removeEventListener('mouseover', startDrawing);
+function startDrawing(box) {
+  let pixel = box.target.style;
+  if (mouseDown === 1) {
+    if (eraser.checked) {
+      if (this.hasAttribute('value')) {
+        this.removeAttribute('value');
       }
-    });
+      pixel.background = bgColor.value;
+    } else if (rainbowMode.checked) {
+      let randomColor = Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, '0');
+      pixel.background = `#${randomColor}`;
+    } else if (shadowMode.checked) {
+      pixel.background = drawShadow(this);
+    } else {
+      pixel.background = inkBase.value;
+      inkBase.disabled = false;
+      shadowMode.checked = false;
+      rainbowMode.checked = false;
+      eraser.checked = false;
+      subShadow.style.display = 'none';
+    }
   }
 }
 
@@ -212,7 +219,6 @@ function drawShadow(box) {
   if (box.hasAttribute('value')) {
     l = box.getAttribute('value');
     if (Number(l) === 20 || Number(l) === 30) {
-      console.log('kzkkfzk');
       l = 20;
     } else {
       if (shadowSmooth.checked) {
