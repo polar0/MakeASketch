@@ -14,8 +14,8 @@ const bgColor = document.querySelector('#bg-color');
 const rainbowMode = document.querySelector('#rainbow');
 const shadowMode = document.querySelector('#shadow');
 const subShadow = document.querySelector('.sub-shadow');
-const shadowSmooth = document.querySelector('#smooth');
-const shadowRough = document.querySelector('#rough');
+const shadowDark = document.querySelector('#dark');
+const shadowLight = document.querySelector('#light');
 const eraser = document.querySelector('#eraser');
 
 const replaceInput = document.querySelector('#replace-input');
@@ -81,22 +81,22 @@ shadowMode.addEventListener('change', function () {
     disableGrabber();
 
     subShadow.style.display = 'flex';
-    shadowSmooth.checked = true;
+    shadowDark.checked = true;
   } else {
     subShadow.style.display = 'none';
   }
-  shadowSmooth.addEventListener('change', function () {
-    if (shadowSmooth.checked) {
-      shadowRough.checked = false;
+  shadowDark.addEventListener('change', function () {
+    if (shadowDark.checked) {
+      shadowLight.checked = false;
     } else {
-      shadowRough.checked = true;
+      shadowLight.checked = true;
     }
   });
-  shadowRough.addEventListener('change', function () {
-    if (shadowRough.checked) {
-      shadowSmooth.checked = false;
+  shadowLight.addEventListener('change', function () {
+    if (shadowLight.checked) {
+      shadowDark.checked = false;
     } else {
-      shadowSmooth.checked = true;
+      shadowDark.checked = true;
     }
   });
 });
@@ -113,7 +113,7 @@ eraser.addEventListener('change', function () {
   }
 });
 
-disableGrabber();
+// disableGrabber();
 
 replaceInput.addEventListener('change', replaceColor);
 
@@ -159,10 +159,11 @@ function createGrid(count) {
 
 document.addEventListener('mousedown', function (e) {
   mouseDown = true;
-  if (e.target.hasAttribute('class', 'box')) {
-    console.log('target');
-    // lui dire que this c'est event target
-    startDrawing(e);
+  if (replaceInput.checked === false) {
+    if (e.target.getAttribute('class') === 'box') {
+      console.log(e.target.getAttribute('class'));
+      startDrawing(e);
+    }
   }
 });
 
@@ -184,22 +185,28 @@ function changeGridSize() {
 }
 
 function startDrawing(box) {
-  let pixel = box.target.style;
+  let pixel = box.target;
+  if (replaceInput.checked) {
+    return;
+  }
   if (mouseDown) {
+    if (shadowMode.checked) {
+      pixel.style.background = drawShadow(pixel);
+    } else if (pixel.hasAttribute('value')) {
+      pixel.removeAttribute('value');
+    }
     if (eraser.checked) {
       if (this.hasAttribute('value')) {
         this.removeAttribute('value');
       }
-      pixel.background = bgColor.value;
+      pixel.style.background = bgColor.value;
     } else if (rainbowMode.checked) {
       let randomColor = Math.floor(Math.random() * 16777215)
         .toString(16)
         .padStart(6, '0');
-      pixel.background = `#${randomColor}`;
-    } else if (shadowMode.checked) {
-      pixel.background = drawShadow(this);
-    } else {
-      pixel.background = inkBase.value;
+      pixel.style.background = `#${randomColor}`;
+    } else if (shadowMode.checked === false) {
+      pixel.style.background = inkBase.value;
       inkBase.disabled = false;
       shadowMode.checked = false;
       rainbowMode.checked = false;
@@ -211,26 +218,23 @@ function startDrawing(box) {
 
 function drawShadow(box) {
   // Retrieve hsl values
-  let shadowArray = hexToHSL(inkBase.value);
+  let shadowArray = RGBToHSL(box.style.background);
+  console.log(box.style.background);
   let h = shadowArray[0];
   let s = shadowArray[1];
-  let l = 90;
+  let l = shadowArray[2];
+  console.log(shadowArray);
 
-  if (box.hasAttribute('value')) {
-    l = box.getAttribute('value');
-    if (Number(l) === 20 || Number(l) === 30) {
-      l = 20;
-    } else {
-      if (shadowSmooth.checked) {
-        l -= 10;
-      } else {
-        l -= 20;
-      }
-      box.setAttribute('value', l);
+  if (shadowDark.checked) {
+    if (l === 100) {
+      l = 90;
+    } else if (l > 0) {
+      l < 10 ? (l = l) : (l -= 10);
     }
   } else {
-    box.setAttribute('value', '90');
+    l === 100 ? (l = 100) : l >= 90 ? (l = l) : (l += 10);
   }
+  box.setAttribute('value', l);
 
   let inkShadow = 'hsl(' + h + ',' + s + '%,' + l + '%)';
   return inkShadow;
@@ -270,7 +274,6 @@ function replaceColor() {
 
 function getColor() {
   replaceGrabber.style.background = this.style.background;
-  console.log('grab');
 }
 
 function disableGrabber() {
@@ -324,6 +327,45 @@ function hexToHSL(H) {
   r /= 255;
   g /= 255;
   b /= 255;
+  let cmin = Math.min(r, g, b),
+    cmax = Math.max(r, g, b),
+    delta = cmax - cmin,
+    h = 0,
+    s = 0,
+    l = 0;
+
+  if (delta == 0) h = 0;
+  else if (cmax === r) h = ((g - b) / delta) % 6;
+  else if (cmax === g) h = (b - r) / delta + 2;
+  else h = (r - g) / delta + 4;
+
+  h = Math.round(h * 60);
+
+  if (h < 0) h += 360;
+
+  l = (cmax + cmin) / 2;
+  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  s = +(s * 100).toFixed(1);
+  l = +(l * 100).toFixed(1);
+
+  return [h, s, l];
+}
+
+function RGBToHSL(rgb) {
+  let sep = rgb.indexOf(',') > -1 ? ',' : ' ';
+  rgb = rgb.substr(4).split(')')[0].split(sep);
+
+  for (let R in rgb) {
+    let r = rgb[R];
+    if (r.indexOf('%') > -1)
+      rgb[R] = Math.round((r.substr(0, r.length - 1) / 100) * 255);
+  }
+
+  // Make r, g, and b fractions of 1
+  let r = rgb[0] / 255,
+    g = rgb[1] / 255,
+    b = rgb[2] / 255;
+
   let cmin = Math.min(r, g, b),
     cmax = Math.max(r, g, b),
     delta = cmax - cmin,
