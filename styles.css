@@ -183,6 +183,17 @@ input[type='range']:value {
   align-items: center;
 }
 
+.saver {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.saver p {
+  color: #7b3c55;
+  font-weight: 700;
+}
+
 hr {
   border: 0;
   margin: 0;
