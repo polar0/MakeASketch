@@ -1,4 +1,4 @@
-# MakeASketch
+# Make A Sketch
 
 Built by me, during the Fundations path from <a href="https://www.theodinproject.com/lessons/foundations-etch-a-sketch">The Odin Project</a>.
 <br /><br />
