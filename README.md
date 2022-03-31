@@ -9,7 +9,7 @@ Features :
 - Regular painting, erasing, rainbow mode
 - Shadow function to darken or lighten pixels
 
-Bonuses :
+Extras :
 
 - Change the background color at any time
 - Replace any color from your sketch
